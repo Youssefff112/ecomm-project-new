@@ -104,9 +104,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (userData) {
         localStorage.setItem('userData', JSON.stringify(userData));
       }
+      // Force a sync to ensure state is updated
+      setToken(userToken);
+      setUser(userData || { token: userToken });
     }
-    setToken(userToken);
-    setUser(userData || { token: userToken });
   }, []);
 
   const logout = useCallback(() => {

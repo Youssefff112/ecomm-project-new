@@ -89,6 +89,11 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ id: s
 
   const handleAddToCart = async () => {
     if (!isAuthenticated) {
+      toast({
+        title: "Please login first",
+        description: "You need to be logged in to add items to cart",
+        variant: "destructive",
+      });
       router.push('/login');
       return;
     }
@@ -99,10 +104,11 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ id: s
         title: "Success!",
         description: "Product added to cart",
       });
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Add to cart error:', error);
       toast({
         title: "Error",
-        description: "Failed to add product to cart",
+        description: error.message || "Failed to add product to cart. Please try again.",
         variant: "destructive",
       });
     }

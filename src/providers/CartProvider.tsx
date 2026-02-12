@@ -81,40 +81,61 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   }, [isAuthenticated, fetchCart]);
 
   const addToCartHandler = useCallback(async (productId: string) => {
+    if (!isAuthenticated) {
+      throw new Error('Please login to add items to cart');
+    }
+    
     try {
       const response = await addToCartService(productId);
-      setCart(response.data);
-      setCartItemsCount(response.numOfCartItems || 0);
+      if (response && response.data) {
+        setCart(response.data);
+        setCartItemsCount(response.numOfCartItems || 0);
+      }
       return response;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error adding to cart:', error);
-      throw error;
+      const errorMessage = error.response?.data?.message || error.message || 'Failed to add to cart';
+      throw new Error(errorMessage);
     }
-  }, []);
+  }, [isAuthenticated]);
 
   const updateQuantity = useCallback(async (productId: string, count: number) => {
+    if (!isAuthenticated) {
+      throw new Error('Please login to update cart');
+    }
+    
     try {
       const response = await updateCartItemQuantity(productId, count);
-      setCart(response.data);
-      setCartItemsCount(response.numOfCartItems || 0);
+      if (response && response.data) {
+        setCart(response.data);
+        setCartItemsCount(response.numOfCartItems || 0);
+      }
       return response;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating quantity:', error);
-      throw error;
+      const errorMessage = error.response?.data?.message || error.message || 'Failed to update quantity';
+      throw new Error(errorMessage);
     }
-  }, []);
+  }, [isAuthenticated]);
 
   const removeItem = useCallback(async (productId: string) => {
+    if (!isAuthenticated) {
+      throw new Error('Please login to remove items');
+    }
+    
     try {
       const response = await removeCartItem(productId);
-      setCart(response.data);
-      setCartItemsCount(response.numOfCartItems || 0);
+      if (response && response.data) {
+        setCart(response.data);
+        setCartItemsCount(response.numOfCartItems || 0);
+      }
       return response;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error removing item:', error);
-      throw error;
+      const errorMessage = error.response?.data?.message || error.message || 'Failed to remove item';
+      throw new Error(errorMessage);
     }
-  }, []);
+  }, [isAuthenticated]);
 
   const clearCartHandler = useCallback(async () => {
     try {

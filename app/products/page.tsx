@@ -25,6 +25,7 @@ export default function ProductsPage() {
     if (!isAuthenticated) {
       toast({
         title: "Please login first",
+        description: "You need to be logged in to add items to cart",
         variant: "destructive",
       });
       return;
@@ -33,11 +34,13 @@ export default function ProductsPage() {
       await addToCart(productId);
       toast({
         title: "Added to cart",
+        description: "Product successfully added to your cart",
       });
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Add to cart error:', error);
       toast({
         title: "Error",
-        description: "Failed to add to cart",
+        description: error.message || "Failed to add to cart. Please try again.",
         variant: "destructive",
       });
     }
