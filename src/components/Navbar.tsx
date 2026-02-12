@@ -2,6 +2,7 @@
 
 import React, { useContext, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter, usePathname } from 'next/navigation';
 import { AuthContext } from '@/providers/AuthProvider';
 import { CartContext } from '@/providers/CartProvider';
@@ -9,6 +10,7 @@ import { WishlistContext } from '@/providers/WishlistProvider';
 import { ShoppingCart, Heart, User, LogOut, Menu, X } from 'lucide-react';
 import { Button } from './ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import freshcartLogo from '../../assets/images/freshcart-logo.svg';
 
 export default function Navbar() {
   const { isAuthenticated, user, logout } = useContext(AuthContext);
@@ -47,11 +49,15 @@ export default function Navbar() {
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link href="/" className="text-xl lg:text-2xl font-bold flex items-center gap-2">
-            <ShoppingCart className="h-6 w-6 lg:h-7 lg:w-7" />
-            <span className="bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
-              FreshCart
-            </span>
+          <Link href="/" className="flex items-center gap-2">
+            <Image
+              src={freshcartLogo}
+              alt="FreshCart"
+              width={160}
+              height={31}
+              priority
+              className="h-7 lg:h-8 w-auto"
+            />
           </Link>
 
           {/* Desktop Navigation */}
@@ -101,7 +107,7 @@ export default function Navbar() {
                     </AvatarFallback>
                   </Avatar>
                   <span className="text-sm font-medium hidden xl:inline">
-                    Hi, {getFirstName(user?.name)}
+                    {user?.name}
                   </span>
                 </Link>
                 <Link href="/wishlist" className="relative hover:text-primary transition">
@@ -217,7 +223,7 @@ export default function Navbar() {
                         </AvatarFallback>
                       </Avatar>
                       <span className="text-sm font-medium">
-                        Hi, {getFirstName(user?.name)}
+                        {user?.name}
                       </span>
                     </Link>
                     <Link

@@ -1,6 +1,6 @@
 'use client';
 
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { AuthContext } from '@/providers/AuthProvider';
 import { getUserOrders } from '@/services/orderService';
@@ -9,29 +9,47 @@ import { Button } from '@/components/ui/button';
 
 export default function OrdersPage() {
   const { isAuthenticated, user, loading: authLoading } = useContext(AuthContext);
-  const [orders, setOrders] = useState([]);
+  const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
-  const fetchOrders = async () => {
+  // Log user object for debugging
+  useEffect(() => {
+    console.log('=== User object in orders page ===');
+    console.log('Full user object:', JSON.stringify(user, null, 2));
+    console.log('user?.id:', user?.id);
+    console.log('user?._id:', user?._id);
+    console.log('isAuthenticated:', isAuthenticated);
+    console.log('authLoading:', authLoading);
+  }, [user, isAuthenticated, authLoading]);
+
+  // Extract user ID as a stable primitive value
+  const userId = useMemo(() => user?.id || user?._id, [user]);
+
+  const fetchOrders = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
       
-      const userId = user?.id || user?._id;
-      if (!userId) {
-        // If no user ID, treat as no orders yet
-        setOrders([]);
-        setLoading(false);
-        return;
-      }
+      console.log('Extracted user ID:', userId);
+      console.log('Fetching orders (userId will be used if available)');
       
       const response = await getUserOrders(userId);
-      setOrders(response || []);
+      console.log('Orders API response:', response);
+      
+      // Handle different response structures
+      const ordersData = response?.data || response || [];
+      console.log('Extracted orders data:', ordersData);
+      
+      setOrders(Array.isArray(ordersData) ? ordersData : []);
     } catch (error: any) {
-      // 500 errors on orders usually mean no orders exist yet - treat as empty
-      if (error?.response?.status === 500) {
+      console.error('Error fetching orders:', error);
+      console.error('Error response:', error?.response);
+      
+      // Handle common error cases - treat as empty orders list
+      if (error?.response?.status === 500 || error?.response?.status === 404 || error?.response?.status === 400) {
+        console.log('No orders found (400/404/500) - treating as empty list');
         setOrders([]);
         setError(null);
       } else {
@@ -40,7 +58,7 @@ export default function OrdersPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [userId]);
 
   useEffect(() => {
     if (!isAuthenticated && !authLoading) {
@@ -48,16 +66,16 @@ export default function OrdersPage() {
       return;
     }
 
-    // Wait for auth to finish loading and user data to be available
+    // Wait for auth to finish loading
     if (authLoading) {
       return;
     }
 
-    // Only fetch orders when we have a user with an ID
-    if (isAuthenticated && user) {
+    // Fetch orders when authenticated (userId is optional - API filters by token)
+    if (isAuthenticated) {
       fetchOrders();
     }
-  }, [isAuthenticated, user, authLoading, router]);
+  }, [isAuthenticated, authLoading, fetchOrders, router]);
 
   if (!isAuthenticated && !authLoading) {
     return null;

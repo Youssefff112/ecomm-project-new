@@ -16,7 +16,7 @@ import Link from 'next/link';
 export default function CheckoutPage() {
   const { isAuthenticated, loading: authLoading } = useContext(AuthContext);
   const { cart, fetchCart } = useContext(CartContext);
-  const [addresses, setAddresses] = useState([]);
+  const [addresses, setAddresses] = useState<any[]>([]);
   const [selectedAddress, setSelectedAddress] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('cash');
   const [loading, setLoading] = useState(false);
@@ -104,11 +104,19 @@ export default function CheckoutPage() {
       city: addressObj.city,
     };
 
+    if (!cart?._id) {
+      toast({
+        title: "Cart not found",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
 
     try {
       if (paymentMethod === 'cash') {
-        await createCashOrder(cart?._id, shippingAddress);
+        await createCashOrder(cart._id, shippingAddress);
         // Refresh cart to update navbar count
         await fetchCart();
         toast({
@@ -119,7 +127,7 @@ export default function CheckoutPage() {
         // Online payment with Stripe
         const successUrl = `${window.location.origin}/payment-success`;
         const cancelUrl = `${window.location.origin}/payment-cancel`;
-        const response = await createCheckoutSession(cart?._id, shippingAddress, successUrl, cancelUrl);
+        const response = await createCheckoutSession(cart._id, shippingAddress, successUrl, cancelUrl);
         if (response.session?.url) {
           window.location.href = response.session.url;
         } else {

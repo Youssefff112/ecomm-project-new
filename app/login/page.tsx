@@ -52,22 +52,40 @@ export default function LoginPage() {
 
       // Decode token to get user info
       const decodedToken = decodeToken(token);
+      console.log('Full decoded token payload:', JSON.stringify(decodedToken, null, 2));
       
       let user = response.user || response.data?.user;
+      console.log('User from API response:', user);
       
       // If user object doesn't exist, create one with token data
       if (!user && decodedToken) {
+        // Extract ID from various possible fields in the token
+        const userId = decodedToken.userId || decodedToken.id || decodedToken._id || decodedToken.sub;
+        
         user = {
           email: formData.email,
           name: decodedToken.name || formData.email.split('@')[0],
-          id: decodedToken.id || decodedToken._id,
-          _id: decodedToken.id || decodedToken._id,
+          id: userId,
+          _id: userId,
           role: decodedToken.role,
         };
-      } else if (user && decodedToken && !user.name) {
+        console.log('Created user from token:', user);
+      } else if (user && decodedToken) {
+        // Ensure user has ID fields from token if not present
+        const userId = decodedToken.userId || decodedToken.id || decodedToken._id || decodedToken.sub;
+        
+        if (!user.id && !user._id && userId) {
+          user.id = userId;
+          user._id = userId;
+          console.log('Added user ID from token:', userId);
+        }
         // If user exists but doesn't have name, add it from token
-        user.name = decodedToken.name || user.email?.split('@')[0];
+        if (!user.name && decodedToken.name) {
+          user.name = decodedToken.name || user.email?.split('@')[0];
+        }
       }
+      
+      console.log('Final user object being stored:', JSON.stringify(user, null, 2));
       
       login(token, user);
       
