@@ -117,15 +117,15 @@ export default function Home() {
         autoplay={{ delay: 5000, disableOnInteraction: false }}
         effect="fade"
         loop={true}
-        className="h-[500px]"
+        className="h-[300px] md:h-[500px]"
       >
         <SwiperSlide>
           <div className="bg-gradient-to-br from-primary to-purple-600 text-white h-full flex items-center justify-center">
             <div className="container mx-auto px-4 text-center">
-              <h1 className="text-5xl md:text-6xl font-bold mb-6">Welcome to FreshCart</h1>
-              <p className="text-xl md:text-2xl mb-8 opacity-90">Discover amazing products at unbeatable prices</p>
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-3 md:mb-6">Welcome to FreshCart</h1>
+              <p className="text-base sm:text-lg md:text-xl lg:text-2xl mb-4 md:mb-8 opacity-90">Discover amazing products at unbeatable prices</p>
               <Link href="/products">
-                <Button size="lg" variant="secondary" className="text-lg px-8">
+                <Button size="lg" variant="secondary" className="text-base md:text-lg px-6 md:px-8">
                   Shop Now
                 </Button>
               </Link>
@@ -136,10 +136,10 @@ export default function Home() {
         <SwiperSlide>
           <div className="bg-gradient-to-br from-pink-400 to-red-500 text-white h-full flex items-center justify-center">
             <div className="container mx-auto px-4 text-center">
-              <h1 className="text-5xl md:text-6xl font-bold mb-6">Flash Sale! Up to 50% Off</h1>
-              <p className="text-xl md:text-2xl mb-8 opacity-90">Limited time offers on selected items</p>
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-3 md:mb-6">Flash Sale! Up to 50% Off</h1>
+              <p className="text-base sm:text-lg md:text-xl lg:text-2xl mb-4 md:mb-8 opacity-90">Limited time offers on selected items</p>
               <Link href="/products">
-                <Button size="lg" variant="secondary" className="text-lg px-8">
+                <Button size="lg" variant="secondary" className="text-base md:text-lg px-6 md:px-8">
                   Shop Deals
                 </Button>
               </Link>
@@ -150,10 +150,10 @@ export default function Home() {
         <SwiperSlide>
           <div className="bg-gradient-to-br from-blue-400 to-cyan-400 text-white h-full flex items-center justify-center">
             <div className="container mx-auto px-4 text-center">
-              <h1 className="text-5xl md:text-6xl font-bold mb-6">New Arrivals</h1>
-              <p className="text-xl md:text-2xl mb-8 opacity-90">Check out our latest collections</p>
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-3 md:mb-6">New Arrivals</h1>
+              <p className="text-base sm:text-lg md:text-xl lg:text-2xl mb-4 md:mb-8 opacity-90">Check out our latest collections</p>
               <Link href="/products">
-                <Button size="lg" variant="secondary" className="text-lg px-8">
+                <Button size="lg" variant="secondary" className="text-base md:text-lg px-6 md:px-8">
                   Explore Now
                 </Button>
               </Link>
@@ -163,11 +163,11 @@ export default function Home() {
       </Swiper>
 
       {/* Featured Products */}
-      <section className="py-20 bg-gray-50">
+      <section className="py-10 lg:py-20 bg-gray-50">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-3">Featured Products</h2>
-            <p className="text-muted-foreground text-lg">Discover our handpicked selection of amazing products</p>
+          <div className="text-center mb-8 lg:mb-12">
+            <h2 className="text-2xl lg:text-4xl font-bold mb-2 md:mb-3">Featured Products</h2>
+            <p className="text-muted-foreground text-sm md:text-base lg:text-lg">Discover our handpicked selection of amazing products</p>
           </div>
           {loading ? (
             <div className="loading-container">

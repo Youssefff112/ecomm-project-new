@@ -1,7 +1,14 @@
 import api from './api';
 
+/**
+ * Order Service
+ * - Cash orders use v2 endpoint
+ * - Online checkout uses v1 endpoint
+ * - Order listing uses v1 endpoints
+ */
+
 export const createCashOrder = async (cartId: string, shippingAddress?: any) => {
-  const response = await api.post(`/v1/orders/${cartId}`, { shippingAddress });
+  const response = await api.post(`/v2/orders/${cartId}`, { shippingAddress });
   return response.data;
 };
 

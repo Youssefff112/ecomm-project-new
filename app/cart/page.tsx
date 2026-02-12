@@ -97,41 +97,41 @@ export default function CartPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-4xl font-bold mb-8">Shopping Cart ({cartItemsCount} items)</h1>
+    <div className="container mx-auto px-4 py-4 md:py-8">
+      <h1 className="text-2xl lg:text-4xl font-bold mb-4 md:mb-8">Shopping Cart ({cartItemsCount} items)</h1>
 
-      <div className="grid lg:grid-cols-3 gap-8">
+      <div className="grid lg:grid-cols-3 gap-4 md:gap-8">
         <div className="lg:col-span-2 space-y-4">
           {cart.products?.map((item: any) => (
             <Card key={item._id}>
-              <CardContent className="p-6">
-                <div className="flex gap-6">
-                  <Link href={`/products/${item.product?._id || item.product?.id}`} className="flex-shrink-0">
+              <CardContent className="p-4 md:p-6">
+                <div className="flex flex-col sm:flex-row gap-4 md:gap-6">
+                  <Link href={`/products/${item.product?._id || item.product?.id}`} className="flex-shrink-0 mx-auto sm:mx-0">
                     <img
                       src={item.product?.imageCover}
                       alt={item.product?.title}
-                      className="w-32 h-32 object-cover rounded-lg hover:opacity-80 transition-opacity"
+                      className="w-24 h-24 sm:w-32 sm:h-32 object-cover rounded-lg hover:opacity-80 transition-opacity"
                     />
                   </Link>
                   <div className="flex-1">
                     <Link href={`/products/${item.product?._id || item.product?.id}`}>
-                      <h3 className="font-semibold text-lg mb-1 hover:text-primary transition-colors line-clamp-2">
+                      <h3 className="font-semibold text-base md:text-lg mb-1 hover:text-primary transition-colors line-clamp-2">
                         {item.product?.title}
                       </h3>
                     </Link>
-                    <p className="text-muted-foreground text-sm mb-1">
+                    <p className="text-muted-foreground text-xs md:text-sm mb-1">
                       Category: {item.product?.category?.name}
                     </p>
                     {item.product?.brand?.name && (
-                      <p className="text-muted-foreground text-sm mb-2">
+                      <p className="text-muted-foreground text-xs md:text-sm mb-2">
                         Brand: {item.product?.brand?.name}
                       </p>
                     )}
-                    <div className="mb-4">
-                      <p className="text-lg font-semibold text-muted-foreground">
+                    <div className="mb-3 md:mb-4">
+                      <p className="text-sm md:text-lg font-semibold text-muted-foreground">
                         Unit Price: {item.price} EGP
                       </p>
-                      <p className="text-2xl font-bold text-primary">
+                      <p className="text-xl md:text-2xl font-bold text-primary">
                         Total: {item.price * item.count} EGP
                       </p>
                     </div>

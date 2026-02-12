@@ -20,12 +20,14 @@ export default function CheckoutPage() {
   const [selectedAddress, setSelectedAddress] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('cash');
   const [loading, setLoading] = useState(false);
+  const [loadingAddresses, setLoadingAddresses] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const { toast } = useToast();
 
   const fetchAddresses = async () => {
     try {
+      setLoadingAddresses(true);
       setError(null);
       const response = await getAddresses();
       console.log('Addresses response:', response);
@@ -40,6 +42,8 @@ export default function CheckoutPage() {
       if (error?.response?.status !== 500) {
         setError('Failed to load addresses.');
       }
+    } finally {
+      setLoadingAddresses(false);
     }
   };
 
@@ -64,6 +68,17 @@ export default function CheckoutPage() {
   }
 
   const handleCheckout = async () => {
+    // Check if user has any addresses saved
+    if (addresses.length === 0) {
+      toast({
+        title: "No address found",
+        description: "Please add a delivery address before placing an order",
+        variant: "destructive",
+      });
+      router.push('/addresses');
+      return;
+    }
+
     if (!selectedAddress) {
       toast({
         title: "Please select an address",
@@ -133,8 +148,8 @@ export default function CheckoutPage() {
 
   if (!cart || !cart.products?.length) {
     return (
-      <div className="container mx-auto px-4 py-16 text-center">
-        <h1 className="text-3xl font-bold mb-4">Your cart is empty</h1>
+      <div className="container mx-auto px-4 py-8 md:py-16 text-center">
+        <h1 className="text-2xl md:text-3xl font-bold mb-4">Your cart is empty</h1>
         <Link href="/products">
           <Button>Browse Products</Button>
         </Link>
@@ -155,17 +170,22 @@ export default function CheckoutPage() {
   }
 
   return ( 
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-4xl font-bold mb-8">Checkout</h1>
+    <div className="container mx-auto px-4 py-4 md:py-8">
+      <h1 className="text-2xl lg:text-4xl font-bold mb-4 md:mb-8">Checkout</h1>
 
-      <div className="grid lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-6">
+      <div className="grid lg:grid-cols-3 gap-4 md:gap-8">
+        <div className="lg:col-span-2 space-y-4 md:space-y-6">
           <Card>
             <CardHeader>
               <CardTitle>Shipping Address</CardTitle>
             </CardHeader>
             <CardContent>
-              {addresses.length === 0 ? (
+              {loadingAddresses ? (
+                <div className="text-center py-8">
+                  <div className="spinner mx-auto mb-2"></div>
+                  <p className="text-muted-foreground">Loading addresses...</p>
+                </div>
+              ) : addresses.length === 0 ? (
                 <div className="text-center py-8">
                   <p className="text-muted-foreground mb-4">No addresses saved</p>
                   <Link href="/addresses">
@@ -173,27 +193,29 @@ export default function CheckoutPage() {
                   </Link>
                 </div>
               ) : (
-                <div className="mb-4">
-                  <Link href="/addresses">
-                    <Button variant="outline" size="sm">Manage Addresses</Button>
-                  </Link>
-                </div>
-                <RadioGroup value={selectedAddress} onValueChange={setSelectedAddress}>
-                  <div className="space-y-3">
-                    {addresses.map((address: any) => (
-                      <div key={address._id || address.id} className="flex items-start space-x-3 border p-4 rounded hover:border-primary transition">
-                        <RadioGroupItem value={address._id || address.id} id={address._id || address.id} className="mt-1" />
-                        <Label htmlFor={address._id || address.id} className="flex-1 cursor-pointer">
-                          <div>
-                            <p className="font-semibold">{address.name}</p>
-                            <p className="text-sm text-muted-foreground">{address.details}</p>
-                            <p className="text-sm text-muted-foreground">{address.city} - {address.phone}</p>
-                          </div>
-                        </Label>
-                      </div>
-                    ))}
+                <>
+                  <div className="mb-4">
+                    <Link href="/addresses">
+                      <Button variant="outline" size="sm">Manage Addresses</Button>
+                    </Link>
                   </div>
-                </RadioGroup>
+                  <RadioGroup value={selectedAddress} onValueChange={setSelectedAddress}>
+                    <div className="space-y-3">
+                      {addresses.map((address: any) => (
+                        <div key={address._id || address.id} className="flex items-start space-x-3 border p-3 md:p-4 rounded hover:border-primary transition">
+                          <RadioGroupItem value={address._id || address.id} id={address._id || address.id} className="mt-1" />
+                          <Label htmlFor={address._id || address.id} className="flex-1 cursor-pointer">
+                            <div>
+                              <p className="font-semibold text-sm md:text-base">{address.name}</p>
+                              <p className="text-xs md:text-sm text-muted-foreground">{address.details}</p>
+                              <p className="text-xs md:text-sm text-muted-foreground">{address.city} - {address.phone}</p>
+                            </div>
+                          </Label>
+                        </div>
+                      ))}
+                    </div>
+                  </RadioGroup>
+                </>
               )}
             </CardContent>
           </Card>
@@ -205,15 +227,15 @@ export default function CheckoutPage() {
             <CardContent>
               <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod}>
                 <div className="space-y-3">
-                  <div className="flex items-center space-x-2 border p-4 rounded">
+                  <div className="flex items-center space-x-2 border p-3 md:p-4 rounded">
                     <RadioGroupItem value="cash" id="cash" />
-                    <Label htmlFor="cash" className="flex-1 cursor-pointer">
+                    <Label htmlFor="cash" className="flex-1 cursor-pointer text-sm md:text-base">
                       Cash on Delivery
                     </Label>
                   </div>
-                  <div className="flex items-center space-x-2 border p-4 rounded">
+                  <div className="flex items-center space-x-2 border p-3 md:p-4 rounded">
                     <RadioGroupItem value="online" id="online" />
-                    <Label htmlFor="online" className="flex-1 cursor-pointer">
+                    <Label htmlFor="online" className="flex-1 cursor-pointer text-sm md:text-base">
                       Online Payment (Stripe)
                     </Label>
                   </div>
@@ -243,13 +265,18 @@ export default function CheckoutPage() {
                   <span className="text-primary">{cart.totalCartPrice} EGP</span>
                 </div>
               </div>
+              {addresses.length === 0 && !loadingAddresses && (
+                <div className="bg-yellow-50 border border-yellow-200 rounded p-3 text-sm text-yellow-800">
+                  ⚠️ Please add a delivery address before placing your order
+                </div>
+              )}
               <Button
                 className="w-full"
                 size="lg"
                 onClick={handleCheckout}
-                disabled={loading || !selectedAddress}
+                disabled={loading || loadingAddresses || !selectedAddress || addresses.length === 0}
               >
-                {loading ? 'Processing...' : 'Place Order'}
+                {loading ? 'Processing...' : loadingAddresses ? 'Loading...' : 'Place Order'}
               </Button>
             </CardContent>
           </Card>

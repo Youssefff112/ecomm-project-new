@@ -1,12 +1,24 @@
 import api from './api';
 
+/**
+ * Review Service - Handles all review-related API calls
+ * Users can create, view, update, and delete reviews for products
+ */
+
 export const createReviewForProduct = async (productId: string, reviewData: any) => {
-  const response = await api.post(`/v1/products/${productId}/reviews`, reviewData);
+  // Create review using the general reviews endpoint with product in the body
+  const response = await api.post('/v1/reviews', { 
+    ...reviewData, 
+    product: productId 
+  });
   return response.data;
 };
 
 export const getReviewsForProduct = async (productId: string) => {
-  const response = await api.get(`/v1/products/${productId}/reviews`);
+  // Use the general reviews endpoint with product filter
+  const response = await api.get('/v1/reviews', { 
+    params: { product: productId } 
+  });
   return response.data;
 };
 

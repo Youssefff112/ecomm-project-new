@@ -1,5 +1,10 @@
 import api from './api';
 
+/**
+ * Cart Service - Uses API v2 endpoints
+ * DO NOT change to v1 - Cart API requires v2
+ */
+
 export const addToCart = async (productId: string) => {
   const response = await api.post('/v2/cart', { productId });
   return response.data;
