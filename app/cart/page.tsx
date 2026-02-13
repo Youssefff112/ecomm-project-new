@@ -2,6 +2,7 @@
 
 import { useContext, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { CartContext } from '@/providers/CartProvider';
 import { AuthContext } from '@/providers/AuthProvider';
 import { Button } from '@/components/ui/button';
@@ -107,11 +108,15 @@ export default function CartPage() {
               <CardContent className="p-4 md:p-6">
                 <div className="flex flex-col sm:flex-row gap-4 md:gap-6">
                   <Link href={`/products/${item.product?._id || item.product?.id}`} className="flex-shrink-0 mx-auto sm:mx-0">
-                    <img
-                      src={item.product?.imageCover}
-                      alt={item.product?.title}
-                      className="w-24 h-24 sm:w-32 sm:h-32 object-cover rounded-lg hover:opacity-80 transition-opacity"
-                    />
+                    <div className="relative w-24 h-24 sm:w-32 sm:h-32">
+                      <Image
+                        src={item.product?.imageCover}
+                        alt={item.product?.title}
+                        fill
+                        sizes="128px"
+                        className="object-cover rounded-lg hover:opacity-80 transition-opacity"
+                      />
+                    </div>
                   </Link>
                   <div className="flex-1">
                     <Link href={`/products/${item.product?._id || item.product?.id}`}>

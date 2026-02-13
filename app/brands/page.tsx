@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { getAllBrands } from '@/services/productService';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -71,11 +72,13 @@ export default function BrandsPage() {
           <Link href={`/brands/${brand._id || brand.id}`} key={brand._id || brand.id}>
             <Card className="overflow-hidden hover:shadow-lg transition cursor-pointer h-full">
               <CardHeader className="p-0">
-                <div className="aspect-square bg-gray-100 flex items-center justify-center">
-                  <img
+                <div className="aspect-square relative bg-gray-100 p-4">
+                  <Image
                     src={brand.image}
                     alt={brand.name}
-                    className="w-full h-full object-contain p-4"
+                    fill
+                    sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 16vw"
+                    className="object-contain p-4"
                   />
                 </div>
               </CardHeader>

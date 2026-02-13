@@ -3,6 +3,7 @@
 import { useContext, useEffect, useState, use } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { getAllProducts, getBrandById } from '@/services/productService';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -135,11 +136,13 @@ export default function BrandProductsPage({ params }: { params: Promise<{ id: st
         </Link>
         {brand && (
           <div className="flex items-center gap-6 mt-4">
-            <div className="w-24 h-24 bg-gray-100 rounded-lg flex items-center justify-center p-4">
-              <img
+            <div className="relative w-24 h-24 bg-gray-100 rounded-lg p-4">
+              <Image
                 src={brand.image}
                 alt={brand.name}
-                className="w-full h-full object-contain"
+                fill
+                sizes="96px"
+                className="object-contain p-2"
               />
             </div>
             <div>
@@ -166,10 +169,12 @@ export default function BrandProductsPage({ params }: { params: Promise<{ id: st
             <Card key={product._id || product.id} className="overflow-hidden hover:shadow-lg transition">
               <Link href={`/products/${product._id || product.id}`}>
                 <div className="aspect-square relative overflow-hidden bg-gray-100">
-                  <img
+                  <Image
                     src={product.imageCover}
                     alt={product.title}
-                    className="object-cover w-full h-full hover:scale-105 transition duration-300"
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 33vw, 25vw"
+                    className="object-cover hover:scale-105 transition duration-300"
                   />
                 </div>
               </Link>

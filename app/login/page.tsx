@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useContext } from 'react';
@@ -18,9 +18,30 @@ export default function LoginPage() {
     password: '',
   });
   const [loading, setLoading] = useState(false);
-  const { login } = useContext(AuthContext);
+  const { login, isAuthenticated, loading: authLoading } = useContext(AuthContext);
   const router = useRouter();
   const { toast } = useToast();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (!authLoading && isAuthenticated) {
+      router.push('/');
+    }
+  }, [isAuthenticated, authLoading, router]);
+
+  // Don't render if already authenticated
+  if (authLoading) {
+    return (
+      <div className="loading-container">
+        <div className="spinner"></div>
+        <p>Loading...</p>
+      </div>
+    );
+  }
+
+  if (isAuthenticated) {
+    return null;
+  }
 
   const decodeToken = (token: string) => {
     try {

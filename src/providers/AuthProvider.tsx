@@ -87,14 +87,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
     };
 
+    // Listen for custom logout event from API interceptor
+    const handleAuthLogout = () => {
+      setToken(null);
+      setUser(null);
+    };
+
     window.addEventListener('storage', handleStorageChange);
     window.addEventListener('popstate', handlePopState);
     document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('auth:logout', handleAuthLogout);
 
     return () => {
       window.removeEventListener('storage', handleStorageChange);
       window.removeEventListener('popstate', handlePopState);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('auth:logout', handleAuthLogout);
     };
   }, [syncWithLocalStorage]);
 
@@ -114,6 +122,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     if (typeof window !== 'undefined') {
       localStorage.removeItem('userToken');
       localStorage.removeItem('userData');
+      // Dispatch custom event to ensure all listeners are notified
+      window.dispatchEvent(new CustomEvent('auth:logout'));
     }
     setToken(null);
     setUser(null);

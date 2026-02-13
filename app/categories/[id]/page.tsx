@@ -3,6 +3,7 @@
 import { useContext, useEffect, useState, use } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { getAllProducts, getCategoryById, getSubCategoriesByCategory } from '@/services/productService';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -146,11 +147,13 @@ export default function CategoryProductsPage({ params }: { params: Promise<{ id:
         </Link>
         {category && (
           <div className="flex items-center gap-4 md:gap-6 mt-4">
-            <div className="w-16 h-16 md:w-24 md:h-24 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0">
-              <img
+            <div className="relative w-16 h-16 md:w-24 md:h-24 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+              <Image
                 src={category.image}
                 alt={category.name}
-                className="w-full h-full object-cover"
+                fill
+                sizes="96px"
+                className="object-cover"
               />
             </div>
             <div>
@@ -202,11 +205,13 @@ export default function CategoryProductsPage({ params }: { params: Promise<{ id:
             <Link href={`/products/${product._id || product.id}`} key={product._id || product.id}>
               <Card className="overflow-hidden hover:shadow-lg transition cursor-pointer h-full flex flex-col">
                 <CardHeader className="p-0">
-                  <div className="aspect-square bg-gray-100 relative">
-                    <img
+                  <div className="aspect-square relative bg-gray-100">
+                    <Image
                       src={product.imageCover || product.images?.[0]}
                       alt={product.title}
-                      className="w-full h-full object-cover"
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 33vw, 25vw"
+                      className="object-cover"
                     />
                     {product.priceAfterDiscount && (
                       <div className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded text-xs font-bold">

@@ -3,6 +3,7 @@
 import { useContext, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { WishlistContext } from '@/providers/WishlistProvider';
 import { CartContext } from '@/providers/CartProvider';
 import { AuthContext } from '@/providers/AuthProvider';
@@ -111,10 +112,12 @@ export default function WishlistPage() {
           <Card key={product._id || product.id} className="overflow-hidden">
             <Link href={`/products/${product._id || product.id}`}>
               <div className="aspect-square relative overflow-hidden bg-gray-100">
-                <img
+                <Image
                   src={product.imageCover}
                   alt={product.title}
-                  className="object-cover w-full h-full hover:scale-105 transition duration-300"
+                  fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 33vw, 25vw"
+                  className="object-cover hover:scale-105 transition duration-300"
                 />
               </div>
             </Link>

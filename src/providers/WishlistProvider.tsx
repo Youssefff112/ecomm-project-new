@@ -73,6 +73,18 @@ export const WishlistProvider = ({ children }: { children: React.ReactNode }) =>
       setWishlist([]);
       setWishlistIds([]);
     }
+
+    // Listen for logout events to immediately clear wishlist
+    const handleAuthLogout = () => {
+      setWishlist([]);
+      setWishlistIds([]);
+      setError(null);
+    };
+
+    window.addEventListener('auth:logout', handleAuthLogout);
+    return () => {
+      window.removeEventListener('auth:logout', handleAuthLogout);
+    };
   }, [isAuthenticated, fetchWishlist]);
 
   const addToWishlist = useCallback(async (productId: string) => {

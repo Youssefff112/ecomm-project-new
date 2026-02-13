@@ -2,6 +2,7 @@
 
 import { useContext, useEffect, useState, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { AuthContext } from '@/providers/AuthProvider';
 import { getUserOrders } from '@/services/orderService';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -135,11 +136,15 @@ export default function OrdersPage() {
                   {order.cartItems?.map((item: any) => (
                     <div key={item._id} className="flex justify-between items-center">
                       <div className="flex gap-3">
-                        <img
-                          src={item.product?.imageCover}
-                          alt={item.product?.title}
-                          className="w-16 h-16 object-cover rounded"
-                        />
+                        <div className="relative w-16 h-16 flex-shrink-0">
+                          <Image
+                            src={item.product?.imageCover}
+                            alt={item.product?.title}
+                            fill
+                            sizes="64px"
+                            className="object-cover rounded"
+                          />
+                        </div>
                         <div>
                           <p className="font-medium">{item.product?.title}</p>
                           <p className="text-sm text-muted-foreground">Qty: {item.count}</p>

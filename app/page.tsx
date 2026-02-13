@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useContext } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { getAllProducts } from '@/services/productService';
 import { Button } from '@/components/ui/button';
 import { AuthContext } from '@/providers/AuthProvider';
@@ -222,10 +223,12 @@ export default function Home() {
                         <div className="border rounded-lg overflow-hidden hover:shadow-xl transition-all duration-300 bg-white h-full flex flex-col">
                           <Link href={`/products/${product._id || product.id}`}>
                             <div className="aspect-square relative overflow-hidden bg-gray-50 cursor-pointer">
-                              <img
+                              <Image
                                 src={product.imageCover}
                                 alt={product.title}
-                                className="object-cover w-full h-full hover:scale-110 transition-transform duration-500"
+                                fill
+                                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 33vw, 25vw"
+                                className="object-cover hover:scale-110 transition-transform duration-500"
                               />
                             </div>
                           </Link>

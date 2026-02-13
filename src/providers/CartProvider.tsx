@@ -78,6 +78,18 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       setCart(null);
       setCartItemsCount(0);
     }
+
+    // Listen for logout events to immediately clear cart
+    const handleAuthLogout = () => {
+      setCart(null);
+      setCartItemsCount(0);
+      setError(null);
+    };
+
+    window.addEventListener('auth:logout', handleAuthLogout);
+    return () => {
+      window.removeEventListener('auth:logout', handleAuthLogout);
+    };
   }, [isAuthenticated, fetchCart]);
 
   const addToCartHandler = useCallback(async (productId: string) => {

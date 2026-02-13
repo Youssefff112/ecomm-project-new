@@ -1,6 +1,8 @@
 import axios from 'axios';
 
-const BASE_URL = 'https://ecommerce.routemisr.com/api';
+// Use proxy route for API calls to avoid CORS issues
+const USE_PROXY = typeof window !== 'undefined';
+const BASE_URL = USE_PROXY ? '/api/proxy' : 'https://ecommerce.routemisr.com/api';
 
 // Create axios instance
 const api = axios.create({
@@ -8,6 +10,7 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  timeout: 15000, // 15 second timeout
 });
 
 // Add token to requests if available
@@ -31,12 +34,14 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Suppress logging for expected 500 errors on cart/wishlist (they mean "empty")
+    // Suppress logging for expected 500 errors (they often mean "empty" or "not found")
     const isExpected500 = 
       error.response?.status === 500 && 
       (error.config?.url?.includes('/cart') || 
        error.config?.url?.includes('/wishlist') ||
-       error.config?.url?.includes('/orders'));
+       error.config?.url?.includes('/orders') ||
+       error.config?.url?.includes('/reviews') ||
+       error.config?.url?.includes('/products'));
     
     if (!isExpected500) {
       if (error.message === 'Network Error') {
@@ -46,14 +51,26 @@ api.interceptors.response.use(
       }
     }
     
-    // Only auto-logout on 401 for auth-related endpoints, not on every 401
-    if (error.response?.status === 401 && error.config?.url?.includes('/auth/')) {
+    // Handle 401 Unauthorized - token is invalid or expired
+    if (error.response?.status === 401) {
       if (typeof window !== 'undefined') {
+        // Clear auth data
         localStorage.removeItem('userToken');
         localStorage.removeItem('userData');
-        window.location.href = '/login';
+        
+        // Dispatch custom event to notify AuthProvider
+        window.dispatchEvent(new CustomEvent('auth:logout'));
+        
+        // Only redirect to login if user is trying to access protected routes
+        // Avoid redirect loops
+        const currentPath = window.location.pathname;
+        const publicPaths = ['/login', '/signup', '/forgot-password', '/'];
+        if (!publicPaths.includes(currentPath)) {
+          window.location.href = '/login';
+        }
       }
     }
+    
     return Promise.reject(error);
   }
 );

@@ -8,7 +8,8 @@ import api from './api';
 export const createReviewForProduct = async (productId: string, reviewData: any) => {
   // Create review using the general reviews endpoint with product in the body
   const response = await api.post('/v1/reviews', { 
-    ...reviewData, 
+    rating: reviewData.rating,
+    review: reviewData.review,
     product: productId 
   });
   return response.data;
@@ -33,7 +34,10 @@ export const getReviewById = async (reviewId: string) => {
 };
 
 export const updateReview = async (reviewId: string, reviewData: any) => {
-  const response = await api.put(`/v1/reviews/${reviewId}`, reviewData);
+  const response = await api.put(`/v1/reviews/${reviewId}`, {
+    rating: reviewData.rating,
+    review: reviewData.review
+  });
   return response.data;
 };
 

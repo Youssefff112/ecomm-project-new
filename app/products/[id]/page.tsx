@@ -2,6 +2,7 @@
 
 import { useEffect, useState, use, useContext } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { getProductById } from '@/services/productService';
 import { getReviewsForProduct, createReviewForProduct, updateReview, deleteReview } from '@/services/reviewService';
 import { Button } from '@/components/ui/button';
@@ -72,12 +73,10 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ id: s
       try {
         setReviewsLoading(true);
         const response = await getReviewsForProduct(resolvedParams.id);
-        console.log('Reviews response:', response);
         const reviewsData = response.data || response.results || response || [];
-        console.log('Reviews data:', reviewsData);
         setReviews(Array.isArray(reviewsData) ? reviewsData : []);
-      } catch (error) {
-        console.error('Error fetching reviews:', error);
+      } catch (error: any) {
+        // Silently handle errors - 500 usually means no reviews exist
         setReviews([]);
       } finally {
         setReviewsLoading(false);
@@ -279,7 +278,11 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ id: s
     return (
       <div className="flex gap-1">
         {[1, 2, 3, 4, 5].map((star) => (
-          <span key={star} className={star <= rating ? "text-yellow-500" : "text-gray-300"}>
+          <span 
+            key={star} 
+            className={star <= rating ? "text-yellow-500" : "text-gray-400"}
+            style={{ opacity: star <= rating ? 1 : 0.3 }}
+          >
             ⭐
           </span>
         ))}
@@ -316,11 +319,14 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ id: s
   return (
     <div className="container mx-auto px-4 py-4 md:py-8">
       <div className="grid lg:grid-cols-2 gap-6 lg:gap-8">
-        <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
-          <img
+        <div className="aspect-square relative bg-gray-100 rounded-lg overflow-hidden">
+          <Image
             src={product.imageCover}
             alt={product.title}
-            className="w-full h-full object-cover"
+            fill
+            sizes="(max-width: 1024px) 100vw, 50vw"
+            className="object-cover"
+            priority
           />
         </div>
 
@@ -380,7 +386,10 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ id: s
                   {(reviews.reduce((acc: number, r: any) => acc + r.rating, 0) / reviews.length).toFixed(1)}
                 </span>
               </div>
-              <p className="text-sm text-muted-foreground">Average Rating</p>
+              <p className="text-sm text-muted-foreground">From {reviews.length} {reviews.length === 1 ? 'Review' : 'Reviews'}</p>
+              {product.ratingsAverage && Math.abs(product.ratingsAverage - (reviews.reduce((acc: number, r: any) => acc + r.rating, 0) / reviews.length)) > 0.1 && (
+                <p className="text-xs text-muted-foreground mt-1">(API shows: {product.ratingsAverage.toFixed(1)})</p>
+              )}
             </div>
           )}
         </div>
@@ -394,21 +403,28 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ id: s
             <CardContent>
               <form onSubmit={handleSubmitReview} className="space-y-4">
                 <div>
-                  <Label htmlFor="rating">Rating</Label>
-                  <div className="flex gap-2 mt-2">
+                  <Label htmlFor="rating">Rating {newReview.rating > 0 && <span className="text-yellow-600 font-semibold">({newReview.rating} {newReview.rating === 1 ? 'star' : 'stars'})</span>}</Label>
+                  <div className="flex gap-1 mt-2">
                     {[1, 2, 3, 4, 5].map((star) => (
                       <button
                         key={star}
                         type="button"
                         onClick={() => setNewReview({ ...newReview, rating: star })}
-                        className="text-3xl focus:outline-none hover:scale-110 transition"
+                        className="text-4xl focus:outline-none hover:scale-125 transition-all duration-200 cursor-pointer"
+                        aria-label={`Rate ${star} stars`}
                       >
-                        <span className={star <= newReview.rating ? "text-yellow-500" : "text-gray-300"}>
+                        <span 
+                          className={star <= newReview.rating ? "text-yellow-500" : "text-gray-400 hover:text-gray-500"}
+                          style={{ opacity: star <= newReview.rating ? 1 : 0.3 }}
+                        >
                           ⭐
                         </span>
                       </button>
                     ))}
                   </div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {newReview.rating === 0 ? 'Click a star to rate (1 star = poor, 5 stars = excellent)' : `You selected ${newReview.rating} ${newReview.rating === 1 ? 'star' : 'stars'}`}
+                  </p>
                 </div>
                 <div>
                   <Label htmlFor="review">Your Review</Label>
@@ -466,21 +482,28 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ id: s
                     <div className="space-y-4 bg-blue-50 p-4 rounded-lg border-2 border-blue-200">
                       <p className="text-sm font-semibold text-blue-700">Editing Review</p>
                       <div>
-                        <Label>Rating</Label>
-                        <div className="flex gap-2 mt-2">
+                        <Label>Rating {editReview.rating > 0 && <span className="text-yellow-600 font-semibold">({editReview.rating} {editReview.rating === 1 ? 'star' : 'stars'})</span>}</Label>
+                        <div className="flex gap-1 mt-2">
                           {[1, 2, 3, 4, 5].map((star) => (
                             <button
                               key={star}
                               type="button"
                               onClick={() => setEditReview({ ...editReview, rating: star })}
-                              className="text-3xl focus:outline-none hover:scale-110 transition"
+                              className="text-4xl focus:outline-none hover:scale-125 transition-all duration-200 cursor-pointer"
+                              aria-label={`Rate ${star} stars`}
                             >
-                              <span className={star <= editReview.rating ? "text-yellow-500" : "text-gray-300"}>
+                              <span 
+                                className={star <= editReview.rating ? "text-yellow-500" : "text-gray-400 hover:text-gray-500"}
+                                style={{ opacity: star <= editReview.rating ? 1 : 0.3 }}
+                              >
                                 ⭐
                               </span>
                             </button>
                           ))}
                         </div>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {editReview.rating === 0 ? 'Click a star to rate (1 star = poor, 5 stars = excellent)' : `You selected ${editReview.rating} ${editReview.rating === 1 ? 'star' : 'stars'}`}
+                        </p>
                       </div>
                       <div>
                         <Label>Your Review</Label>
