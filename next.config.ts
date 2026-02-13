@@ -1,6 +1,14 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  eslint: {
+    // Don't run ESLint during production builds on Vercel to avoid config warnings
+    ignoreDuringBuilds: true,
+  },
+  typescript: {
+    // Skip type checking during builds (Vercel runs it separately)
+    ignoreBuildErrors: false,
+  },
   images: {
     remotePatterns: [
       {
